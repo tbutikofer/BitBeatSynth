@@ -9,19 +9,33 @@ struct BytebeatCompiler {
         return ctx
     }()
 
-    static func compile(expression: String) -> (UInt32) -> UInt8 {
-        let sanitized = expression.trimmingCharacters(in: .whitespacesAndNewlines)
-        let wrapped = needsMasking(sanitized) ? "(\(sanitized)) & 255" : sanitized
+    static func compile(expression: String, engine: BytebeatAudioEngine) -> (UInt32) -> UInt8 {
+        let ctx = JSContext()!
+        ctx.exceptionHandler = { ctx, err in
+            print("JS Error: \(err?.toString() ?? "unknown")")
+        }
 
-        let jsCode = "function f(t) { return \(wrapped); }"
-        context.evaluateScript(jsCode)
+        let expr = expression.trimmingCharacters(in: .whitespacesAndNewlines)
+        let wrappedExpr = "(\(expr)) & 255"
 
-        let fn = context.objectForKeyedSubscript("f")
+        ctx.setObject(engine.variableX, forKeyedSubscript: "x" as NSString)
+        ctx.setObject(engine.variableY, forKeyedSubscript: "y" as NSString)
+        ctx.evaluateScript("function f(t) { return \(wrappedExpr); }")
+
+        guard let fn = ctx.objectForKeyedSubscript("f"), fn.isObject else {
+            print("⚠️ Expression failed to compile. Falling back to t & 255.")
+            return { t in UInt8(t & 0xFF) }
+        }
+
         return { t in
-            let result = fn?.call(withArguments: [t]).toInt32() ?? 0
+            ctx.setObject(engine.variableX, forKeyedSubscript: "x" as NSString)
+            ctx.setObject(engine.variableY, forKeyedSubscript: "y" as NSString)
+            let result = fn.call(withArguments: [t])?.toInt32() ?? 0
             return UInt8(clamping: result)
         }
     }
+
+
 
     private static func needsMasking(_ expr: String) -> Bool {
         // basic check to avoid double-masking

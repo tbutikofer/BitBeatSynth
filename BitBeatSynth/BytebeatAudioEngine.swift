@@ -15,6 +15,9 @@ class BytebeatAudioEngine: ObservableObject {
 
     @Published var waveformBuffer: [Float] = Array(repeating: 0, count: 512)
 
+    @Published var variableX: Float = 5
+    @Published var variableY: Float = 8
+
     init() {
         sourceNode = AVAudioSourceNode { _, _, frameCount, audioBufferList -> OSStatus in
             let ablPointer = UnsafeMutableAudioBufferListPointer(audioBufferList)

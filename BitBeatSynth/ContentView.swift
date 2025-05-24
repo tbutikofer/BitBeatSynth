@@ -23,6 +23,8 @@ struct ContentView: View {
                 .onChange(of: code) {
                     debounceExpressionUpdate(code)
                 }
+            
+            XYPad(x: $audio.variableX, y: $audio.variableY)
 
             Button(audio.isPlaying ? "Stop" : "Play") {
                 if audio.isPlaying {
@@ -48,7 +50,7 @@ struct ContentView: View {
         debounceTimer?.invalidate()
         debounceTimer = Timer.scheduledTimer(withTimeInterval: 0.3, repeats: false) { _ in
             DispatchQueue.main.async {
-                audio.expression = BytebeatCompiler.compile(expression: newCode)
+                audio.expression = BytebeatCompiler.compile(expression: code, engine: audio)
             }
         }
     }
