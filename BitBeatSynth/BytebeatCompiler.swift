@@ -9,10 +9,13 @@ struct BytebeatCompiler {
         return ctx
     }()
 
-    static func compile(expression: String, engine: BytebeatAudioEngine) -> (UInt32) -> UInt8 {
+    static func compile(expression: String, engine: BytebeatAudioEngine) -> ((UInt32) -> UInt8, String?) {
         let ctx = JSContext()!
-        ctx.exceptionHandler = { ctx, err in
-            print("JS Error: \(err?.toString() ?? "unknown")")
+        var latestError: String? = nil
+
+        ctx.exceptionHandler = { _, error in
+            latestError = error?.toString()
+            print("JS Error: \(latestError ?? "unknown")")
         }
 
         let expr = expression.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -23,17 +26,19 @@ struct BytebeatCompiler {
         ctx.evaluateScript("function f(t) { return \(wrappedExpr); }")
 
         guard let fn = ctx.objectForKeyedSubscript("f"), fn.isObject else {
-            print("⚠️ Expression failed to compile. Falling back to t & 255.")
-            return { t in UInt8(t & 0xFF) }
+            return ({ _ in UInt8(0) }, latestError ?? "Expression did not compile.")
         }
 
-        return { t in
+        let compiled: (UInt32) -> UInt8 = { t in
             ctx.setObject(engine.variableX, forKeyedSubscript: "x" as NSString)
             ctx.setObject(engine.variableY, forKeyedSubscript: "y" as NSString)
             let result = fn.call(withArguments: [t])?.toInt32() ?? 0
             return UInt8(clamping: result)
         }
+
+        return (compiled, latestError)
     }
+
 
 
 
