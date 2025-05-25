@@ -8,6 +8,10 @@ struct ContentView: View {
     @State private var cursorVisible = true
     @State private var cursorTimer: Timer? = nil
     @State private var cursorIndex = 0 // optional: you can later move this with arrow keys
+    @State private var x: Float = 5
+    @State private var y: Float = 8
+    @State private var a: Float = 3
+    @State private var b: Float = 11
 
 
     var body: some View {
@@ -54,6 +58,7 @@ struct ContentView: View {
                 .frame(height: 120)
                 .frame(maxWidth: .infinity)
                 .background(Color.black.opacity(0.2))
+                .padding(.horizontal)
 
             Divider()
 
@@ -63,10 +68,10 @@ struct ContentView: View {
                     CustomKeyboardView { key in
                         switch key {
                         case "DELETE":
-                            if cursorIndex > 0 {
-                                code.remove(at: code.index(code.startIndex, offsetBy: cursorIndex - 1))
-                                cursorIndex -= 1
-                            }
+                            guard cursorIndex > 0, cursorIndex <= code.count else { break }
+                            code.remove(at: code.index(code.startIndex, offsetBy: cursorIndex - 1))
+                            cursorIndex -= 1
+                            cursorIndex = min(max(0, cursorIndex), code.count)
                         case "RETURN":
                             isEditingExpression = false
                         case "◀︎":
@@ -82,6 +87,7 @@ struct ContentView: View {
                             let index = code.index(code.startIndex, offsetBy: cursorIndex)
                             code.insert(contentsOf: key, at: index)
                             cursorIndex += key.count
+                            cursorIndex = min(max(0, cursorIndex), code.count)
                         }
                     }
 
@@ -89,8 +95,14 @@ struct ContentView: View {
                 .frame(maxWidth: .infinity)
             } else {
                 VStack(spacing: 8) {
-                    XYPad(x: $audio.variableX, y: $audio.variableY)
-                        .frame(maxWidth: .infinity)
+                    DualTouchPad(
+                        x: $audio.variableX,
+                        y: $audio.variableY,
+                        a: $audio.variableA,
+                        b: $audio.variableB
+                    )
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .background(Color.clear)
                 }
                 .frame(maxWidth: .infinity)
             }

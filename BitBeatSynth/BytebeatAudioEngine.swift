@@ -9,14 +9,13 @@ class BytebeatAudioEngine: ObservableObject {
     private let bytebeatRate: Double = 8000.0 / 44100.0
 
     @Published var isPlaying = false
-    @Published var expression: (UInt32) -> UInt8 = { t in
-        return UInt8(t & 0xFF)  // Clean 8-bit sawtooth wave
-    }
-
+    @Published var expression: (UInt32) -> UInt8 = { t in UInt8(t & 0xFF) }
     @Published var waveformBuffer: [Float] = Array(repeating: 0, count: 512)
-
     @Published var variableX: Float = 5
     @Published var variableY: Float = 8
+    @Published var variableA: Float = 3
+    @Published var variableB: Float = 11
+
 
     init() {
         sourceNode = AVAudioSourceNode { _, _, frameCount, audioBufferList -> OSStatus in

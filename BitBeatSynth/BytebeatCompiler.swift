@@ -32,6 +32,8 @@ struct BytebeatCompiler {
         let compiled: (UInt32) -> UInt8 = { t in
             ctx.setObject(engine.variableX, forKeyedSubscript: "x" as NSString)
             ctx.setObject(engine.variableY, forKeyedSubscript: "y" as NSString)
+            ctx.setObject(engine.variableA, forKeyedSubscript: "a" as NSString)
+            ctx.setObject(engine.variableB, forKeyedSubscript: "b" as NSString)
             let result = fn.call(withArguments: [t])?.toInt32() ?? 0
             return UInt8(clamping: result)
         }
