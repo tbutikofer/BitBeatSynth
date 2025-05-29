@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import UIKit
 
 struct DualTouchPad: UIViewRepresentable {
     @Binding var x: Float
@@ -15,18 +16,32 @@ struct DualTouchPad: UIViewRepresentable {
 
     func makeUIView(context: Context) -> TouchPadView {
         let view = TouchPadView()
-        view.onUpdate = { touch1, touch2, size in
-            if let t1 = touch1 {
-                x = Float(t1.x / size.width * 15)
-                y = Float((1.0 - t1.y / size.height) * 15)
+
+        view.onUpdate = { t1, t2, size in
+            let half = size.width / 2
+
+            if let p1 = t1 {
+                // LEFT half → full 0…15
+                x = Float(p1.x / half * 15)
+                y = Float((1 - p1.y / size.height) * 15)
             }
-            if let t2 = touch2 {
-                a = Float(t2.x / size.width * 15)
-                b = Float((1.0 - t2.y / size.height) * 15)
+
+            if let p2 = t2 {
+                // RIGHT half → subtract midX, then full 0…15
+                let localX = p2.x - half
+                a = Float(localX / half * 15)
+                b = Float((1 - p2.y / size.height) * 15)
             }
         }
+
         return view
     }
 
-    func updateUIView(_ uiView: TouchPadView, context: Context) {}
+    func updateUIView(_ uiView: TouchPadView, context: Context) {
+        uiView.x = x
+        uiView.y = y
+        uiView.a = a
+        uiView.b = b
+        uiView.setNeedsDisplay()
+    }
 }

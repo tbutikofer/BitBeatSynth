@@ -8,18 +8,23 @@
 import UIKit
 
 class TouchPadView: UIView {
-    var onUpdate: ((_ touch1: CGPoint?, _ touch2: CGPoint?, _ size: CGSize) -> Void)?
-
-    private var touches: [UITouch: CGPoint] = [:]
     var x: Float = 0
     var y: Float = 0
     var a: Float = 0
     var b: Float = 0
 
+    var onUpdate: ((_ touch1: CGPoint?, _ touch2: CGPoint?, _ size: CGSize) -> Void)?
+
+    private var point1: CGPoint?
+    private var point2: CGPoint?
+
+    private var leftTouch: UITouch?
+    private var rightTouch: UITouch?
+
     override init(frame: CGRect) {
         super.init(frame: frame)
         self.isMultipleTouchEnabled = true
-        self.backgroundColor = UIColor.darkGray // in init
+        self.backgroundColor = UIColor.darkGray
     }
 
     @available(*, unavailable)
@@ -27,48 +32,69 @@ class TouchPadView: UIView {
         fatalError("init(coder:) is not supported")
     }
 
-    // Handle touches
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        for t in touches {
-            self.touches[t] = t.location(in: self)
-        }
-        update()
+        assignTouches(touches)
+        updateTouchPositions()
     }
 
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-        for t in touches {
-            self.touches[t] = t.location(in: self)
-        }
-        update()
+        updateTouchPositions()
     }
 
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        for t in touches {
-            self.touches.removeValue(forKey: t)
+        for touch in touches {
+            if touch == leftTouch { leftTouch = nil; point1 = nil }
+            if touch == rightTouch { rightTouch = nil; point2 = nil }
         }
-        update()
+        setNeedsDisplay()
     }
 
     override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
-        for t in touches {
-            self.touches.removeValue(forKey: t)
-        }
-        update()
+        touchesEnded(touches, with: event)
     }
 
-    private func update() {
-        let points = Array(touches.values.prefix(2))
-        let t1 = points.count > 0 ? points[0] : nil
-        let t2 = points.count > 1 ? points[1] : nil
-        onUpdate?(t1, t2, self.bounds.size)
-        if let t1 = t1 {
-            x = Float(t1.x / bounds.width * 15)
-            y = Float((1.0 - t1.y / bounds.height) * 15)
+    private func assignTouches(_ touches: Set<UITouch>) {
+        for touch in touches {
+            let loc = touch.location(in: self)
+            let isLeft = loc.x < bounds.midX
+
+            if isLeft && leftTouch == nil {
+                leftTouch = touch
+            } else if !isLeft && rightTouch == nil {
+                rightTouch = touch
+            }
         }
-        if let t2 = t2 {
-            a = Float(t2.x / bounds.width * 15)
-            b = Float((1.0 - t2.y / bounds.height) * 15)
+    }
+
+    private func updateTouchPositions() {
+        let halfWidth = bounds.width / 2
+        let height = bounds.height
+        let usableXRange = halfWidth - 20
+
+        if let lt = leftTouch {
+            let loc = lt.location(in: self)
+            point1 = loc
+
+            let clampedX = min(max(loc.x, 10), halfWidth - 10 - 0.001)
+            x = Float((clampedX - 10) / usableXRange * 15)
+
+            let clampedY = min(max(loc.y, 0), height)
+            y = Float((1.0 - clampedY / height) * 15)
         }
+
+        if let rt = rightTouch {
+            let loc = rt.location(in: self)
+            point2 = loc
+
+            let localX = loc.x - halfWidth
+            let clampedX = min(max(localX, 10), usableXRange - 0.001)
+            a = Float((clampedX - 10) / usableXRange * 15)
+
+            let clampedY = min(max(loc.y, 0), height)
+            b = Float((1.0 - clampedY / height) * 15)
+        }
+
+        onUpdate?(point1, point2, bounds.size)
         setNeedsDisplay()
     }
 
@@ -77,24 +103,53 @@ class TouchPadView: UIView {
 
         ctx.clear(rect)
 
-        // Always show based on stored values
-        let xPos = CGFloat(x / 15) * rect.width
-        let yPos = CGFloat(1.0 - y / 15) * rect.height
-        let aPos = CGFloat(a / 15) * rect.width
-        let bPos = CGFloat(1.0 - b / 15) * rect.height
+        // Split line
+        ctx.setStrokeColor(UIColor.white.withAlphaComponent(0.2).cgColor)
+        ctx.setLineWidth(1)
+        ctx.move(to: CGPoint(x: rect.midX, y: 0))
+        ctx.addLine(to: CGPoint(x: rect.midX, y: rect.height))
+        ctx.strokePath()
 
-        let safeX1 = min(max(xPos, 10), rect.width - 10)
-        let safeY1 = min(max(yPos, 10), rect.height - 10)
-        let r1 = CGRect(x: safeX1 - 10, y: safeY1 - 10, width: 20, height: 20)
+        // Clamp helper
+        func clamp(_ val: CGFloat, min: CGFloat, max: CGFloat) -> CGFloat {
+            return Swift.max(min, Swift.min(val, max))
+        }
+
+        let usableXRange = rect.width / 2 - 20
+
+        // Blue disk (x/y)
+        let bluePt: CGPoint = {
+            if let pt = point1 {
+                return pt
+            } else {
+                let xPos = CGFloat(x / 15) * usableXRange + 10
+                let yPos = CGFloat(1.0 - y / 15) * rect.height
+                return CGPoint(x: xPos, y: yPos)
+            }
+        }()
+        let blueX = clamp(bluePt.x, min: 10, max: rect.width / 2 - 10)
+        let blueY = clamp(bluePt.y, min: 10, max: rect.height - 10)
+        let blueRect = CGRect(x: blueX - 10, y: blueY - 10, width: 20, height: 20)
         UIColor.systemBlue.setFill()
-        ctx.fillEllipse(in: r1)
+        ctx.fillEllipse(in: blueRect)
 
-        let safeX2 = min(max(aPos, 10), rect.width - 10)
-        let safeY2 = min(max(bPos, 10), rect.height - 10)
-        let r2 = CGRect(x: safeX2 - 10, y: safeY2 - 10, width: 20, height: 20)
+        // Orange disk (a/b)
+        let orangePt: CGPoint = {
+            if let pt = point2 {
+                return pt
+            } else {
+                let xPos = rect.midX + CGFloat(a / 15) * usableXRange + 10
+                let yPos = CGFloat(1.0 - b / 15) * rect.height
+                return CGPoint(x: xPos, y: yPos)
+            }
+        }()
+        let orangeX = clamp(orangePt.x, min: rect.midX + 10, max: rect.width - 10)
+        let orangeY = clamp(orangePt.y, min: 10, max: rect.height - 10)
+        let orangeRect = CGRect(x: orangeX - 10, y: orangeY - 10, width: 20, height: 20)
         UIColor.systemOrange.setFill()
-        ctx.fillEllipse(in: r2)
-        
+        ctx.fillEllipse(in: orangeRect)
+
+        // Value overlays
         let paragraph = NSMutableParagraphStyle()
         paragraph.alignment = .left
 
@@ -104,18 +159,17 @@ class TouchPadView: UIView {
             .paragraphStyle: paragraph
         ]
 
-        // Compose the value strings
-        let xyString = "x/y: \(Int(x)), \(Int(y))"
-        let abString = "a/b: \(Int(a)), \(Int(b))"
+        let xyString = String(format: "x/y: %.0f/%.0f", x, y)
+        let abString = String(format: "a/b: %.0f/%.0f", a, b)
 
-        // Draw background box
-        let box = CGRect(x: 8, y: 8, width: 100, height: 36)
+        let boxXY = CGRect(x: 8, y: 8, width: rect.width / 2 - 16, height: 20)
         UIColor.black.withAlphaComponent(0.4).setFill()
-        UIBezierPath(roundedRect: box, cornerRadius: 6).fill()
-
-        // Draw text lines
+        UIBezierPath(roundedRect: boxXY, cornerRadius: 6).fill()
         xyString.draw(at: CGPoint(x: 12, y: 10), withAttributes: attributes)
-        abString.draw(at: CGPoint(x: 12, y: 24), withAttributes: attributes)
+
+        let boxAB = CGRect(x: rect.midX + 8, y: 8, width: rect.width / 2 - 16, height: 20)
+        UIColor.black.withAlphaComponent(0.4).setFill()
+        UIBezierPath(roundedRect: boxAB, cornerRadius: 6).fill()
+        abString.draw(at: CGPoint(x: rect.midX + 12, y: 10), withAttributes: attributes)
     }
 }
-
