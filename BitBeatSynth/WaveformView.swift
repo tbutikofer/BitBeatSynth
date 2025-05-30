@@ -29,8 +29,7 @@ struct WaveformView: View {
                 context.stroke(path, with: .color(.green), lineWidth: 2)
             }
         }
-        .frame(height: 100)
-        .background(Color.black.opacity(0.8))
+        .background(Color.clear)
         .cornerRadius(10)
     }
 }

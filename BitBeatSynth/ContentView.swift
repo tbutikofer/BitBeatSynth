@@ -55,13 +55,6 @@ struct ContentView: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
 
-                // 2. Waveform View
-                WaveformView(samples: audio.waveformBuffer)
-                    .frame(height: 120)
-                    .frame(maxWidth: .infinity)
-                    .background(Color.black.opacity(0.2))
-                    .padding(.horizontal)
-
                 Divider()
 
                 // 3. XYPad or Custom Keyboard
@@ -97,14 +90,19 @@ struct ContentView: View {
                     .frame(maxWidth: .infinity)
                 } else {
                     VStack(spacing: 8) {
-                        DualTouchPad(
-                            x: $audio.variableX,
-                            y: $audio.variableY,
-                            a: $audio.variableA,
-                            b: $audio.variableB
-                        )
+                        ZStack {
+                            WaveformView(samples: audio.waveformBuffer)
+                                .opacity(0.25) // ✅ make it subtle
+                                .edgesIgnoringSafeArea(.all)
+
+                            TouchPad(
+                                x: $audio.variableX,
+                                y: $audio.variableY,
+                                a: $audio.variableA,
+                                b: $audio.variableB
+                            )
+                        }
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
-                        .background(Color.clear)
                     }
                     .frame(maxWidth: .infinity)
                 }
@@ -149,13 +147,15 @@ struct ContentView: View {
         debounceTimer = Timer.scheduledTimer(withTimeInterval: 0.3, repeats: false) { _ in
             DispatchQueue.main.async {
                 let (compiled, error) = BytebeatCompiler.compile(expression: newCode, engine: audio)
-                audio.expression = compiled
 
                 if let error = error, !error.isEmpty {
                     compileError = error  // 🟥 Show error
+                    // 🛑 Don't update audio.expression if invalid
                 } else {
                     compileError = nil    // ✅ Clear on success
+                    audio.expression = compiled
                 }
+
             }
         }
     }

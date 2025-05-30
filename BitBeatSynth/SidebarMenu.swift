@@ -43,7 +43,7 @@ struct SidebarMenu: View {
                         .font(.system(size: 24))
                         .foregroundColor(.white)
                         .padding(8)
-                        .background(Color.blue.opacity(0.8))
+                        .background(Color.blue.opacity(0.3))
                         .clipShape(Circle())
                         .help(panel.label)
                 }
