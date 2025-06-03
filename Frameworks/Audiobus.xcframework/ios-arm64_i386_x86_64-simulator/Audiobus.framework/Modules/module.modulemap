@@ -1,0 +1,6 @@
+framework module Audiobus {
+  umbrella header "Audiobus.h"
+
+  export *
+  module * { export * }
+}

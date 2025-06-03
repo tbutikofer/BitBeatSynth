@@ -6,6 +6,12 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		657D86932DEB80B300C3D0FD /* Audiobus.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 657D868B2DEB6E6400C3D0FD /* Audiobus.xcframework */; };
+		657D86942DEB80B300C3D0FD /* Audiobus.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 657D868B2DEB6E6400C3D0FD /* Audiobus.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		65A9FB8A2DEE360600647CCF /* livecoding.txt in Resources */ = {isa = PBXBuildFile; fileRef = 65A9FB892DEE360600647CCF /* livecoding.txt */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		65406BD72DDFBE9200139AAE /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -23,10 +29,27 @@
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		657D86952DEB80B300C3D0FD /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				657D86942DEB80B300C3D0FD /* Audiobus.xcframework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		65406BC92DDFBE8A00139AAE /* BitBeatSynth.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BitBeatSynth.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		65406BD62DDFBE9200139AAE /* BitBeatSynthTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BitBeatSynthTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		65406BE02DDFBE9200139AAE /* BitBeatSynthUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BitBeatSynthUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		656A5BF62DE9D5320045FF8F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		657D868B2DEB6E6400C3D0FD /* Audiobus.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = Audiobus.xcframework; sourceTree = "<group>"; };
+		65A9FB892DEE360600647CCF /* livecoding.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = livecoding.txt; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -52,6 +75,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				657D86932DEB80B300C3D0FD /* Audiobus.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -75,6 +99,9 @@
 		65406BC02DDFBE8900139AAE = {
 			isa = PBXGroup;
 			children = (
+				65A9FB892DEE360600647CCF /* livecoding.txt */,
+				657D868A2DEB6E1800C3D0FD /* Frameworks */,
+				656A5BF62DE9D5320045FF8F /* Info.plist */,
 				65406BCB2DDFBE8A00139AAE /* BitBeatSynth */,
 				65406BD92DDFBE9200139AAE /* BitBeatSynthTests */,
 				65406BE32DDFBE9200139AAE /* BitBeatSynthUITests */,
@@ -92,6 +119,14 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		657D868A2DEB6E1800C3D0FD /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				657D868B2DEB6E6400C3D0FD /* Audiobus.xcframework */,
+			);
+			path = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -102,6 +137,7 @@
 				65406BC52DDFBE8900139AAE /* Sources */,
 				65406BC62DDFBE8900139AAE /* Frameworks */,
 				65406BC72DDFBE8900139AAE /* Resources */,
+				657D86952DEB80B300C3D0FD /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -212,6 +248,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				65A9FB8A2DEE360600647CCF /* livecoding.txt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -393,11 +430,15 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = BitBeatSynth/BitBeatSynth.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = LHJ2FCHQHW;
 				ENABLE_PREVIEWS = YES;
+				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/Frameworks";
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "$(SRCROOT)/BitBeatSynth/audiobus_info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -421,11 +462,15 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = BitBeatSynth/BitBeatSynth.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = LHJ2FCHQHW;
 				ENABLE_PREVIEWS = YES;
+				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/Frameworks";
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "$(SRCROOT)/BitBeatSynth/audiobus_info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
