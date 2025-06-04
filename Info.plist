@@ -51,16 +51,18 @@
 	      <string>Audiobus-Compatible Audio Unit</string>
 	    </dict>
 	  </array>
-  	<key>CFBundleURLTypes</key>
-  	<array>
-  	  <dict>
-  	    <key>CFBundleURLSchemes</key>
-  	    <array>
-  	      <string>bitbeatsynth-1.0.audiobus</string>
-  	    </array>
-  	    <key>CFBundleURLName</key>
-  	    <string>com.soundartgames.bitbeatsynth</string>
-  	  </dict>
-  	</array>
+        <key>CFBundleURLTypes</key>
+        <array>
+          <dict>
+            <key>CFBundleURLSchemes</key>
+            <array>
+              <string>bitbeatsynth-1.0.audiobus</string>
+            </array>
+            <key>CFBundleURLName</key>
+            <string>com.soundartgames.bitbeatsynth</string>
+          </dict>
+        </array>
+        <key>AudiobusAPIKey</key>
+        <string>H4sIAAAAAAAAA22OQU7DMBBFr1J53dREFJpm18IBEBUrjCo7mbYjEscajxFW1bszjrpk+96fZ18V/AakrFpVb9bb7ea5bhq1VC75foCjtyOI2iPvwfIhe76ITDQcY3eB2TlkJy4WV9Wrh5VNPU4uxdZoo2UdJuKo2s+r4hzKhU10Fv5P+02mYnqIHWFgnLwMdvde9TKNwTK6ARYzW3x4LPOY3L3s2BUwWp9OtuNEQEIPr7t3oT9AcS7Wt6+lwl6M0Qyj/M9SrgjOGJlsedXob8hGPz6tG3X7A1C97mAjAQAA:dRoY0E/ropPy3IjQmUp5Mvn/+saoCeF0SSEJmz1qdCGtpAuMrJ6tXYum5Hk8RzxdPh/u4TqqAaww4A8mOaGrbhw9gIN4ho3IaFCMJWhhqANXJSwDoqrWiARUQJoXtWRM</string>
 </dict>
 </plist>
