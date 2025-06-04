@@ -28,7 +28,7 @@ struct SidebarMenu: View {
             case .help: return "Help"
             case .settings: return "Settings"
             case .midi: return "MIDI"
-            case .performance: return "Live"
+            case .performance: return "Live Coding Mode"
             }
         }
     }

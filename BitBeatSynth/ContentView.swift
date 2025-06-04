@@ -13,6 +13,7 @@ struct ContentView: View {
     @State private var a: Float = 3
     @State private var b: Float = 11
     @State private var activePanel: SidebarMenu.Panel? = nil
+    @State private var showLiveManual = false
 
 
     var body: some View {
@@ -91,9 +92,14 @@ struct ContentView: View {
                 } else {
                     VStack(spacing: 8) {
                         ZStack {
-                            WaveformView(samples: audio.waveformBuffer)
-                                .opacity(0.25) // ✅ make it subtle
-                                .edgesIgnoringSafeArea(.all)
+                            if showLiveManual {
+                                LiveCodingManualView()
+                                    .edgesIgnoringSafeArea(.all)
+                            } else {
+                                WaveformView(samples: audio.waveformBuffer)
+                                    .opacity(0.25)
+                                    .edgesIgnoringSafeArea(.all)
+                            }
 
                             TouchPad(
                                 x: $audio.variableX,
@@ -134,7 +140,13 @@ struct ContentView: View {
             case .help: HelpPanel()
             case .settings: SettingsPanel()
             case .midi: MIDIPanel()
-            case .performance: PerformancePanel()
+            case .performance: EmptyView()
+            }
+        }
+        .onChange(of: activePanel) { panel in
+            if panel == .performance {
+                showLiveManual.toggle()
+                activePanel = nil
             }
         }
     }
