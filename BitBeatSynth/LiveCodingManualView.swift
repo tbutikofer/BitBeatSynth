@@ -5,7 +5,7 @@ struct LiveCodingManualView: View {
 
     init() {
         if let url = Bundle.main.url(forResource: "livecoding", withExtension: "txt"),
-           let contents = try? String(contentsOf: url) {
+           let contents = try? String(contentsOf: url, encoding: .utf8) {
             self.text = contents
         } else {
             self.text = "Live coding manual not available."
