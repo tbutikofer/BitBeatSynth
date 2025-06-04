@@ -20,6 +20,7 @@ struct LiveCodingManualView: View {
                 .padding()
                 .frame(maxWidth: .infinity, alignment: .leading)
         }
+        .padding(.leading, 80)
         .background(Color.black.opacity(0.15))
         .cornerRadius(8)
     }
