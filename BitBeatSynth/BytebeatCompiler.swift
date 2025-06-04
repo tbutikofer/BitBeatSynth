@@ -5,7 +5,7 @@ struct BytebeatCompiler {
     static let context: JSContext = {
         let ctx = JSContext()!
         ctx.exceptionHandler = { ctx, err in
-            print("JS Error: \(err?.toString() ?? \"unknown\")")
+            print("JS Error: \(err?.toString() ?? "unknown")")
         }
         return ctx
     }()
@@ -18,7 +18,7 @@ struct BytebeatCompiler {
         // Capture errors for this compile
         ctx.exceptionHandler = { _, error in
             latestError = error?.toString()
-            print("JS Error: \(latestError ?? \"unknown\")")
+            print("JS Error: \(latestError ?? "unknown")")
         }
 
         let expr = expression.trimmingCharacters(in: .whitespacesAndNewlines)
