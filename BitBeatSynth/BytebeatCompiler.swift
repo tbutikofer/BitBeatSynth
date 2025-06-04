@@ -1,25 +1,29 @@
 import JavaScriptCore
 
 struct BytebeatCompiler {
+    // Shared JSContext to avoid recreating one for every compile
     static let context: JSContext = {
         let ctx = JSContext()!
         ctx.exceptionHandler = { ctx, err in
-            print("JS Error: \(err?.toString() ?? "unknown")")
+            print("JS Error: \(err?.toString() ?? \"unknown\")")
         }
         return ctx
     }()
 
     static func compile(expression: String, engine: BytebeatAudioEngine) -> ((UInt32) -> UInt8, String?) {
-        let ctx = JSContext()!
+        // Reuse the shared JSContext for each compilation
+        let ctx = BytebeatCompiler.context
         var latestError: String? = nil
 
+        // Capture errors for this compile
         ctx.exceptionHandler = { _, error in
             latestError = error?.toString()
-            print("JS Error: \(latestError ?? "unknown")")
+            print("JS Error: \(latestError ?? \"unknown\")")
         }
 
         let expr = expression.trimmingCharacters(in: .whitespacesAndNewlines)
-        let wrappedExpr = "(\(expr)) & 255"
+        // Apply & 255 unless the expression already masks the result
+        let wrappedExpr = needsMasking(expr) ? "(\(expr)) & 255" : expr
 
         ctx.setObject(engine.variableX, forKeyedSubscript: "x" as NSString)
         ctx.setObject(engine.variableY, forKeyedSubscript: "y" as NSString)
@@ -45,8 +49,11 @@ struct BytebeatCompiler {
 
 
     private static func needsMasking(_ expr: String) -> Bool {
-        // basic check to avoid double-masking
-        return !expr.contains("&") && !expr.contains("%")
+        // Rough check to avoid double masking if the user already limits the output
+        let lowered = expr.replacingOccurrences(of: " ", with: "").lowercased()
+        return !lowered.contains("&255") &&
+               !lowered.contains("&0xff") &&
+               !lowered.contains("%256")
     }
 }
 
