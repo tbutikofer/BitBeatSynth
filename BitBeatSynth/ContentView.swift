@@ -58,38 +58,8 @@ struct ContentView: View {
 
                 Divider()
 
-                // 3. XYPad or Custom Keyboard
-                if isEditingExpression {
-                    VStack(spacing: 8) {
-                        CustomKeyboardView { key in
-                            switch key {
-                            case "DELETE":
-                                guard cursorIndex > 0, cursorIndex <= code.count else { break }
-                                code.remove(at: code.index(code.startIndex, offsetBy: cursorIndex - 1))
-                                cursorIndex -= 1
-                                cursorIndex = min(max(0, cursorIndex), code.count)
-                            case "RETURN":
-                                isEditingExpression = false
-                            case "◀︎":
-                                if cursorIndex > 0 {
-                                    cursorIndex -= 1
-                                }
-                            case "▶︎":
-                                if cursorIndex < code.count {
-                                    cursorIndex += 1
-                                }
-                            default:
-                                // Insert character at cursor
-                                let index = code.index(code.startIndex, offsetBy: cursorIndex)
-                                code.insert(contentsOf: key, at: index)
-                                cursorIndex += key.count
-                                cursorIndex = min(max(0, cursorIndex), code.count)
-                            }
-                        }
-
-                    }
-                    .frame(maxWidth: .infinity)
-                } else {
+                // 3. Waveform/Manual with optional keyboard overlay
+                ZStack(alignment: .bottom) {
                     VStack(spacing: 8) {
                         ZStack {
                             if showLiveManual {
@@ -107,10 +77,43 @@ struct ContentView: View {
                                 a: $audio.variableA,
                                 b: $audio.variableB
                             )
+                            .allowsHitTesting(!isEditingExpression)
                         }
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                     }
                     .frame(maxWidth: .infinity)
+
+                    if isEditingExpression {
+                        VStack(spacing: 8) {
+                            CustomKeyboardView { key in
+                                switch key {
+                                case "DELETE":
+                                    guard cursorIndex > 0, cursorIndex <= code.count else { break }
+                                    code.remove(at: code.index(code.startIndex, offsetBy: cursorIndex - 1))
+                                    cursorIndex -= 1
+                                    cursorIndex = min(max(0, cursorIndex), code.count)
+                                case "RETURN":
+                                    isEditingExpression = false
+                                case "◀︎":
+                                    if cursorIndex > 0 {
+                                        cursorIndex -= 1
+                                    }
+                                case "▶︎":
+                                    if cursorIndex < code.count {
+                                        cursorIndex += 1
+                                    }
+                                default:
+                                    // Insert character at cursor
+                                    let index = code.index(code.startIndex, offsetBy: cursorIndex)
+                                    code.insert(contentsOf: key, at: index)
+                                    cursorIndex += key.count
+                                    cursorIndex = min(max(0, cursorIndex), code.count)
+                                }
+                            }
+                        }
+                        .frame(maxWidth: .infinity)
+                        .transition(.move(edge: .bottom))
+                    }
                 }
 
                 Spacer(minLength: 0)
