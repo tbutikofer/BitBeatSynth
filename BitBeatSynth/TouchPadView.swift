@@ -70,9 +70,9 @@ class TouchPadView: UIView {
             let loc = t1.location(in: self)
             point1 = loc
             let clampedX = min(max(loc.x, 10), width - 10)
-            x = Float((clampedX - 10) / usableXRange * 15)
+            x = Float((clampedX - 10) / usableXRange * 255)
             let clampedY = min(max(loc.y, 0), height)
-            y = Float((1.0 - clampedY / height) * 15)
+            y = Float((1.0 - clampedY / height) * 255)
         }
 
         if touchOrder.count >= 2 {
@@ -80,9 +80,9 @@ class TouchPadView: UIView {
             let loc = t2.location(in: self)
             point2 = loc
             let clampedX = min(max(loc.x, 10), width - 10)
-            a = Float((clampedX - 10) / usableXRange * 15)
+            a = Float((clampedX - 10) / usableXRange * 255)
             let clampedY = min(max(loc.y, 0), height)
-            b = Float((1.0 - clampedY / height) * 15)
+            b = Float((1.0 - clampedY / height) * 255)
         }
 
         onUpdate?(point1, point2, bounds.size)
@@ -105,8 +105,8 @@ class TouchPadView: UIView {
             if let pt = point1 {
                 return pt
             } else {
-                let xPos = CGFloat(x / 15) * usableXRange + 10
-                let yPos = CGFloat(1.0 - y / 15) * rect.height
+                let xPos = CGFloat(x / 255) * usableXRange + 10
+                let yPos = CGFloat(1.0 - y / 255) * rect.height
                 return CGPoint(x: xPos, y: yPos)
             }
         }()
@@ -121,8 +121,8 @@ class TouchPadView: UIView {
             if let pt = point2 {
                 return pt
             } else {
-                let xPos = CGFloat(a / 15) * usableXRange + 10
-                let yPos = CGFloat(1.0 - b / 15) * rect.height
+                let xPos = CGFloat(a / 255) * usableXRange + 10
+                let yPos = CGFloat(1.0 - b / 255) * rect.height
                 return CGPoint(x: xPos, y: yPos)
             }
         }()
