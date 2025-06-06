@@ -82,13 +82,28 @@ private struct HexagonalCanvas: View {
     }
 
     private func drawWaveform(context: inout GraphicsContext, rows: Int, hexWidth: CGFloat, hexHeight: CGFloat) {
-        context.addFilter(.shadow(color: Color.orange.opacity(glowIntensity), radius: 6))
-        context.drawLayer { layerContext in
-            for (i, sample) in samples.enumerated() {
-                let amp = max(-1, min(1, sample))
-                let row = Int((1 - (amp + 1) / 2) * Double(rows - 1))
-                let path = hexPath(col: i, row: row, hexWidth: hexWidth, hexHeight: hexHeight)
-                layerContext.fill(path, with: .color(Color.orange))
+        context.addFilter(
+            .shadow(
+                color: Color.orange.opacity(glowIntensity),
+                radius: 6
+            )
+        )
+
+        let paths: [Path] = samples.enumerated().map { index, sample in
+            let clamped = max(-1, min(1, sample))
+            let normalized = (clamped + 1) / 2
+            let rowIndex = Int((1 - normalized) * Double(rows - 1))
+            return hexPath(
+                col: index,
+                row: rowIndex,
+                hexWidth: hexWidth,
+                hexHeight: hexHeight
+            )
+        }
+
+        context.drawLayer { layer in
+            for path in paths {
+                layer.fill(path, with: .color(Color.orange))
             }
         }
     }
