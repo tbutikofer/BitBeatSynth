@@ -66,13 +66,9 @@ struct ContentView: View {
                                 LiveCodingManualView()
                                     .edgesIgnoringSafeArea(.all)
                             } else {
-                                HexWaveformView(
-                                    samples: audio.waveformBuffer,
-                                    glowIntensity: 1.0,
-                                    cloudOpacity: 0.3,
-                                    updateSpeed: 0.05
-                                )
-                                .edgesIgnoringSafeArea(.all)
+                                WaveformView(samples: audio.waveformBuffer)
+                                    .opacity(0.25)
+                                    .edgesIgnoringSafeArea(.all)
                             }
 
                             TouchPad(
