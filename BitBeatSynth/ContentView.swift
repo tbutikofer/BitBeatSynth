@@ -66,8 +66,9 @@ struct ContentView: View {
                                 LiveCodingManualView()
                                     .edgesIgnoringSafeArea(.all)
                             } else {
-                                WaveformView(samples: audio.waveformBuffer)
-                                    .opacity(0.25)
+                                HexGridWaveformView(samples: audio.waveformBuffer)
+//                                WaveformView(samples: audio.waveformBuffer)
+//                                    .opacity(0.25)
                                     .edgesIgnoringSafeArea(.all)
                             }
 
