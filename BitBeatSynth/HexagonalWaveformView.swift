@@ -34,8 +34,8 @@ struct HexagonalWaveformView: View {
                 let bgRect = CGRect(origin: .zero, size: size)
                 context.fill(Path(bgRect), with: .linearGradient(
                     Gradient(colors: [Color.black, Color(red: 0.1, green: 0.1, blue: 0.1)]),
-                    startPoint: .top,
-                    endPoint: .bottom))
+                    startPoint: CGPoint(x: bgRect.midX, y: 0),
+                    endPoint: CGPoint(x: bgRect.midX, y: bgRect.maxY)))
                 context.fill(Path(bgRect), with: .color(Color.black.opacity(cloudOpacity)))
 
                 func hexPath(col: Int, row: Int) -> Path {
